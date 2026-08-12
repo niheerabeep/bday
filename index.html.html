@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NULL//SECTOR</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+*{box-sizing:border-box}body{margin:0;background:#020403;color:#71ffab;font-family:"Share Tech Mono",monospace;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;background:repeating-linear-gradient(0deg,transparent 0 2px,#fff 3px)}
+#app{min-height:100vh;display:grid;place-items:center;padding:22px}.box{width:min(900px,100%);background:#040a06;border:1px solid #267849;box-shadow:0 0 45px #0a472633}
+.top{padding:10px 15px;border-bottom:1px solid #267849;display:flex;justify-content:space-between;font-size:12px}.content{padding:32px}
+h1{font-size:clamp(32px,7vw,64px);margin:0 0 6px;text-shadow:0 0 16px #71ffab66}h2{margin:0 0 20px;font-size:20px}
+p{color:#a8cdb5;line-height:1.7}.dim{color:#4b986b;font-size:12px}.prompt{color:#71ffab}.clue{margin:24px 0;padding:18px;border-left:2px solid #267849;background:#0a241533;color:#d0f8dc}
+input,button{font:inherit;color:#71ffab;background:#020604;border:1px solid #267849;padding:13px 15px}input{width:min(600px,100%);outline:none}button{cursor:pointer}button:hover{background:#0c2415;box-shadow:0 0 14px #71ffab22}.row{display:flex;gap:9px;flex-wrap:wrap}.error{color:#ff6075;margin-top:10px}.ok{color:#71ffab;margin-top:10px;min-height:20px}
+.progress{height:3px;background:#0d2417;margin-bottom:30px}.progress span{display:block;height:100%;background:#71ffab;box-shadow:0 0 9px #71ffab}
+pre{white-space:pre-wrap;line-height:1.7}.hidden{display:none}.flash{animation:flash .3s 2}@keyframes flash{50%{filter:brightness(2)}}
+</style>
+</head>
+<body><div id="app"></div>
+<script>
+/* =========================================================
+   CHANGE YOUR FINAL WEBSITE HERE
+   ========================================================= */
+const FINAL_SITE = "https://example.com";
+/* ========================================================= */
+
+const nodes=[
+{t:"BOOTSTRAP // 00",d:`There is no name attached to this machine.<br>
+Only a dead process and a fragment of its startup log.`,c:`<pre>[07:41:19] daemon started
+[07:41:20] identity: N U L L
+[07:41:20] status: waiting
+[07:41:21] message: "The first door is never locked."</pre>
+<span class="dim">// Don't enter what you see. Look at what is missing.</span>`,q:"What is missing from the identity?",a:"0",ph:"enter one character..."},
+{t:"GHOST PACKET // 01",d:`A packet was intercepted before it reached the server.
+Its contents were damaged — but not completely.`,c:`<pre>G7  2F  2A  2A  35
+        ↓
+L?  ?A  ? ?  ?</pre>
+<span class="dim">// The machine uses a familiar alphabet. Every letter has moved three places.</span>`,q:"Recover the first word.",a:"D4",special:"shift",ph:"enter the recovered code..."},
+{t:"MEMORY DUMP // 02",d:`Someone tried to erase a memory block.
+The deletion failed in exactly four places.`,c:`<pre>00110001
+00110100
+00110001
+00110000
+
+[REPEAT THE DIGITS THAT APPEAR TWICE]</pre>`,q:"What four-digit key remains?",a:"1110",ph:"enter the key..."},
+{t:"DEAD CHANNEL // 03",d:`The terminal has been receiving a signal every 11 seconds.
+There is no sender ID.`,c:`<pre>..-.  .-..  .- --. 
+.-.  . .-..  .- -.--
+</pre><span class="dim">// It isn't encrypted. It's older than encryption.</span>`,q:"Decode the transmission.",a:"FLAG READY",special:"morse",ph:"enter the message..."},
+{t:"ROOT NOTE // 04",d:`A note was left inside the administrator's directory.
+It appears meaningless until you stop reading it normally.`,c:`<pre>R E D   E V I L
+N O   D A T A
+T H E   E N D
+</pre><span class="dim">// The answer is hiding at the edges.</span>`,q:"What phrase do the edges tell you?",a:"RED END",ph:"enter the phrase..."},
+{t:"BLACKBOX // 05",d:`The final lock does not ask for a password.
+It asks whether you've been paying attention.`,c:`<div class="clue"><span class="prompt">&gt; LOG:</span><br>
+00 — you entered through the door.<br>
+01 — you followed the signal.<br>
+10 — you found what was deleted.<br>
+11 — you decoded the dead channel.<br><br>
+<span class="dim">// Four binary states. One final instruction.</span></div>`,q:"Enter the four states as one binary string.",a:"0111",ph:"e.g. 0101"},
+{t:"ROOT ACCESS // 06",d:`<span class="prompt">HANDSHAKE COMPLETE.</span><br><br>
+The terminal has stopped asking questions.<br>
+There is one remaining connection.`,c:`<div class="clue"><span class="dim">REMOTE ENDPOINT:</span><br><br>
+<span class="prompt">████████████████████</span><br><br>
+CONNECTION STATUS: READY</div>`,final:true}
+];
+
+let n=0;
+function shell(inner){return `<div class="box"><div class="top"><span>● NULL//SECTOR</span><span>NODE ${String(n).padStart(2,"0")}</span></div>${inner}</div>`}
+function render(){
+ const x=nodes[n], pct=Math.round(n/(nodes.length-1)*100);
+ document.getElementById("app").innerHTML=shell(`<div class="content">
+ <div class="progress"><span style="width:${pct}%"></span></div>
+ <div class="dim">/dev/null/session/${n}</div><h2>${x.t}</h2><p>${x.d}</p>${x.c}
+ ${x.final?`<button onclick="openFinal()">FOLLOW CONNECTION</button>`:
+ `<p class="prompt">&gt; ${x.q}</p><div class="row"><input id="ans" placeholder="${x.ph}" autocomplete="off"><button onclick="check()">EXECUTE</button></div><div id="msg" class="error"></div>`}
+ </div>`);
+ if(!x.final){ans.onkeydown=e=>e.key==="Enter"&&check();ans.focus()}
+}
+function check(){
+ let v=ans.value.trim().toUpperCase(), x=nodes[n];
+ if(v===x.a){
+  msg.className="ok";msg.textContent=">> SIGNAL ACCEPTED";
+  document.querySelector(".box").classList.add("flash");
+  setTimeout(()=>{n++;render()},650);
+ }else{msg.textContent=">> NO. SOMETHING IS STILL HIDDEN."}
+}
+function openFinal(){window.location.href=FINAL_SITE}
+function start(){
+ n=0;document.getElementById("app").innerHTML=shell(`<div class="content">
+ <div class="dim">INCOMING CONNECTION...</div><h1>NULL<span class="prompt">_</span></h1>
+ <p>Unknown terminal detected.</p><p class="dim">If you were not supposed to find this, close the window.</p>
+ <button onclick="render()">CONNECT</button></div>`)
+}
+start();
+</script></body></html>
